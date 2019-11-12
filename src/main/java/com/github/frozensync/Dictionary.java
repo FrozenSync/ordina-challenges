@@ -4,9 +4,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
+/**
+ * Representation of a dictionary containing a list of words.
+ */
 class Dictionary {
 
     private List<String> words;
@@ -15,32 +18,38 @@ class Dictionary {
         this.words = words;
     }
 
-    static Optional<Dictionary> from(File file) {
-        Scanner scanner;
-        try {
-            scanner = new Scanner(file);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            return Optional.empty();
-        }
-
+    /**
+     * Returns a dictionary {@code Dictionary} constructed from the given {@code file}.
+     *
+     * @param file CSV file to construct the dictionary from
+     * @return a dictionary
+     * @throws FileNotFoundException if source is not found
+     */
+    static Dictionary from(File file) throws FileNotFoundException {
+        var scanner = new Scanner(file);
         var words = new ArrayList<String>();
 
         while (scanner.hasNext()) {
             var line = scanner.nextLine();
-            String word = parseLine(line);
+            var word = parseLine(line);
             words.add(word);
         }
 
-        Dictionary result = new Dictionary(words);
-        return Optional.of(result);
+        return new Dictionary(words);
     }
 
     private static String parseLine(String line) {
-        var scanner = new Scanner(line);
-        scanner.useDelimiter(";");
-
+        var scanner = new Scanner(line).useDelimiter(";");
         return scanner.next();
+    }
+
+    /**
+     * Returns the words in this dictionary as a stream {@code Stream<String>}.
+     *
+     * @return the words in this dictionary
+     */
+    Stream<String> getWordsAsStream() {
+        return words.stream();
     }
 
     @Override
